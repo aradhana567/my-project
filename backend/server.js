@@ -1,52 +1,55 @@
 const express = require("express");
 const cors = require("cors");
-const { Pool } = require("pg");
-require("dotenv").config();
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-});
-
-pool.query(`
-  CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    name TEXT
-  );
-`).then(() => {
-  console.log("Table ready");
-}).catch(err => console.error(err));
-
+// Test route
 app.get("/", (req, res) => {
-  res.send("Backend running!");
+  res.send("Backend is running 🚀");
 });
 
-app.post("/add", async (req, res) => {
-  const { name } = req.body;
+// Example POST route (you can use this later)
+app.post("/data", (req, res) => {
+  const data = req.body;
+  console.log("Received:", data);
 
-  try {
-    const result = await pool.query(
-      "INSERT INTO users(name) VALUES($1) RETURNING *",
-      [name]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
+  res.json({ message: "Data received successfully" });
 });
 
-app.get("/data", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM users");
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
+// ✅ IMPORTANT: Render PORT
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});const express = require("express");
+const cors = require("cors");
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Test route
+app.get("/", (req, res) => {
+  res.send("Backend is running 🚀");
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log("Server running"));
+// Example POST route (you can use this later)
+app.post("/data", (req, res) => {
+  const data = req.body;
+  console.log("Received:", data);
+
+  res.json({ message: "Data received successfully" });
+});
+
+// ✅ IMPORTANT: Render PORT
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});
