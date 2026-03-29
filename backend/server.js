@@ -9,7 +9,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
-// 🔗 Connect to PostgreSQL
+// Connect to database
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -17,36 +17,36 @@ const pool = new Pool({
   },
 });
 
-// ✅ Create table automatically
+// Create table if not exists
 pool.query(`
-  CREATE TABLE IF NOT EXISTS submissions (
+  CREATE TABLE IF NOT EXISTS students (
     id SERIAL PRIMARY KEY,
     name TEXT,
     roll TEXT,
     thoughts TEXT
-  )
+  );
 `);
 
-// ✅ Save data to DB
+// API to save data
 app.post("/submit", async (req, res) => {
   const { name, roll, thoughts } = req.body;
 
   try {
     await pool.query(
-      "INSERT INTO submissions (name, roll, thoughts) VALUES ($1, $2, $3)",
+      "INSERT INTO students (name, roll, thoughts) VALUES ($1, $2, $3)",
       [name, roll, thoughts]
     );
 
-    res.json({ message: "Saved in database 💖" });
+    res.send("Data saved successfully");
   } catch (err) {
-    console.error("DB ERROR:", err);
-    res.status(500).json({ message: "Error saving data" });
+    console.error(err);
+    res.status(500).send("Error saving data");
   }
 });
 
-// ✅ Test route
+// Test route
 app.get("/", (req, res) => {
-  res.send("Backend working 🚀");
+  res.send("Backend is running 🚀");
 });
 
 app.listen(PORT, () => {
